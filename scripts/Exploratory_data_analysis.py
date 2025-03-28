@@ -1,6 +1,20 @@
+import sys
+import os
+from os import P_ALL
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import skew, kurtosis
 import seaborn as sns
+import logging
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import PowerTransformer
+from scipy.stats import zscore
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import mean_absolute_error
+import importlib
 
 def load_data(file_path):
     """Loads data from a CSV file."""
@@ -109,6 +123,13 @@ def handle_skewness(data, column):
     plt.show()
 
     return pd.Series(transformed_data, index=data.index)
+
+# remove outliers using z-score
+def remove_outliers(data, column, threshold=3):
+    z_scores = zscore(data[column])
+    abs_z_scores = np.abs(z_scores)
+    return data[abs_z_scores < threshold]
+
 
 def plot_correlation_matrix(data):
     """
